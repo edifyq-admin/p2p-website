@@ -1,9 +1,9 @@
 
 import Head from 'next/head';
 
-import { Grid, GridColumn, GridRow, Header, Message } from 'semantic-ui-react';
+import { Grid, GridColumn, GridRow, Header } from 'semantic-ui-react';
 
-export default function DefaultLayout({}) {
+export default function DefaultLayout({ children }) {
     return (
         <>
             <Head>
@@ -18,6 +18,7 @@ export default function DefaultLayout({}) {
                     </GridColumn>
                 </GridRow>
             </Grid>
+            { children }
         </>
     )
 }

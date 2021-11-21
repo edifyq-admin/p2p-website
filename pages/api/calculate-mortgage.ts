@@ -37,7 +37,7 @@ const calculateMortgage = ({ mortgage, period, rate}: {mortgage: number, period:
     const payment = calculateMonthlyPayment({ mortgage, paymentMonths: period * 12, rate });
     const detail = calculateDetail({ mortgage, paymentMonths: period * 12, rate });
     const totalInterest = detail.reduce((sum, item) => sum += item.interest, 0);
-    return { detail, mortgage, payment, period, rate, totalInterest, totalLoan: mortgage + totalInterest };
+    return { detail, mortgage: mortgage * 1, payment, period, rate, totalInterest, totalLoan: mortgage * 1 + totalInterest };
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
