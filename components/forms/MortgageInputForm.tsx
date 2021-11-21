@@ -50,7 +50,7 @@ export const MortgageInputForm = () => {
     }
 
     return (
-        <div style={{padding: '0 32px'}}>
+        <div style={{padding: '0 16px 0 32px'}}>
             <Segment raised color="blue">
                 <Header as="h1" color="blue" textAlign="center">Mortgage Form</Header>
                 <Form>
