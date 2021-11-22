@@ -25,7 +25,7 @@ class MortgageSummaryPanel extends Component {
 
     render() {
         return (
-            <div style={{padding: '0 32px 0 16px'}}>
+            <div>
                 {this.state.payment > 0 && (
                     <Segment raised color="teal">
                         <Header as="h1" color="teal" textAlign="center">Mortgage summary</Header>

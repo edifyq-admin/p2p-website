@@ -50,52 +50,50 @@ export const MortgageInputForm = () => {
     }
 
     return (
-        <div style={{padding: '0 16px 0 32px'}}>
-            <Segment raised color="blue">
-                <Header as="h1" color="blue" textAlign="center">Mortgage Form</Header>
-                <Form>
-                    <List relaxed size="huge">
-                        <List.Item>
-                            <FormField>
-                                <Input fluid size="mini" icon='pound sign' iconPosition='left' type="number" placeholder="Mortgage amount" value={loanAmount} onChange={handleLoanAmountChange} />
-                                {mortgageError && <Label basic color="red" pointing>
-                                    {mortgageError}
-                                </Label>}
-                            </FormField>
-                        </List.Item>
-                        <List.Item>
-                            <Grid stackable>
-                                <GridRow columns={2}>
-                                    <GridColumn>
-                                        <Input fluid size="mini" icon='percent' type="number" placeholder="Interest rate" value={interest} onChange={handleInterestChange} />
-                                        {interestError && <Label basic color="red" pointing>
-                                            {interestError}
-                                        </Label>}
-                                    </GridColumn>
-                                    <GridColumn>
-                                        <Input fluid size="mini" icon='calendar alternate outline' iconPosition="left" label={{ basic: true, content: 'years' }} labelPosition="right" type="number" placeholder="Years" value={term} onChange={handleTermChange} />
-                                        {termError && <Label basic color="red" pointing>
-                                            {termError}
-                                        </Label>}
-                                    </GridColumn>
-                                </GridRow>
-                            </Grid>
-                        </List.Item>
-                        <List.Item>
-                            <Grid columns={2} stackable>
-                                <Grid.Row>
-                                    <GridColumn>
-                                        <Button fluid primary size="massive" onClick={sendData}>Calculate</Button>
-                                    </GridColumn>
-                                    <GridColumn>
-                                        <Button fluid secondary size="massive" onClick={clearData}>Reset</Button>
-                                    </GridColumn>
-                                </Grid.Row>
-                            </Grid>
-                        </List.Item>
-                    </List>
-                </Form>
-            </Segment>
-        </div>
+        <Segment raised color="blue">
+            <Header as="h1" color="blue" textAlign="center">Mortgage Form</Header>
+            <Form>
+                <List relaxed size="huge">
+                    <List.Item>
+                        <FormField>
+                            <Input fluid size="mini" icon='pound sign' iconPosition='left' type="number" placeholder="Mortgage amount" value={loanAmount} onChange={handleLoanAmountChange} />
+                            {mortgageError && <Label basic color="red" pointing>
+                                {mortgageError}
+                            </Label>}
+                        </FormField>
+                    </List.Item>
+                    <List.Item>
+                        <Grid stackable>
+                            <GridRow columns={2}>
+                                <GridColumn>
+                                    <Input fluid size="mini" icon='percent' type="number" placeholder="Interest rate" value={interest} onChange={handleInterestChange} />
+                                    {interestError && <Label basic color="red" pointing>
+                                        {interestError}
+                                    </Label>}
+                                </GridColumn>
+                                <GridColumn>
+                                    <Input fluid size="mini" icon='calendar alternate outline' iconPosition="left" label={{ basic: true, content: 'years' }} labelPosition="right" type="number" placeholder="Years" value={term} onChange={handleTermChange} />
+                                    {termError && <Label basic color="red" pointing>
+                                        {termError}
+                                    </Label>}
+                                </GridColumn>
+                            </GridRow>
+                        </Grid>
+                    </List.Item>
+                    <List.Item>
+                        <Grid columns={2} stackable>
+                            <Grid.Row>
+                                <GridColumn>
+                                    <Button fluid primary size="massive" onClick={sendData}>Calculate</Button>
+                                </GridColumn>
+                                <GridColumn>
+                                    <Button fluid secondary size="massive" onClick={clearData}>Reset</Button>
+                                </GridColumn>
+                            </Grid.Row>
+                        </Grid>
+                    </List.Item>
+                </List>
+            </Form>
+        </Segment>
     )
 }

@@ -14,7 +14,7 @@ class MortgageDetailPanel extends Component {
     }
     render() {
         return (
-            <div style={{padding: '32px 32px'}}>
+            <div>
                 {this.state.detail.length > 0 && (
                     <Segment color="grey" raised>
                         <Header as="h1" color="grey" textAlign="center">Mortgage monthly breakdown</Header>

@@ -12,7 +12,7 @@ import { MortgageDetailPanel } from '../components/panels/MortgageDetailPanel';
 const Home: NextPage = () => {
   return (
     <DefaultLayout>
-      <Grid>
+      <Grid stackable>
         <GridRow columns={2}>
           <GridColumn><MortgageInputForm /></GridColumn>
           <GridColumn><MortgageSummaryPanel /></GridColumn>

@@ -18,7 +18,9 @@ export default function DefaultLayout({ children }) {
                     </GridColumn>
                 </GridRow>
             </Grid>
-            { children }
+            <div style={{padding: '16px'}}>
+                { children }
+            </div>
         </>
     )
 }
