@@ -30,7 +30,7 @@ class MortgageDetailPanel extends Component {
                             </TableHeader>
                             <TableBody>
                                 {this.state.detail.map((paymentLine: any) => (
-                                    <TableRow>
+                                    <TableRow key={paymentLine.month}>
                                         <TableCell textAlign="center">{paymentLine.month}</TableCell>
                                         <TableCell textAlign="center">{numberFormat(paymentLine.balance)}</TableCell>
                                         <TableCell textAlign="center">{numberFormat(paymentLine.payment)}</TableCell>
