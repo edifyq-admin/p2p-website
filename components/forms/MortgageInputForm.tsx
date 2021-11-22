@@ -72,7 +72,7 @@ export const MortgageInputForm = () => {
                                     </Label>}
                                 </GridColumn>
                                 <GridColumn>
-                                    <Input fluid size="mini" icon='calendar alternate outline' iconPosition="left" label={{ basic: true, content: 'years' }} labelPosition="right" type="number" placeholder="Years" value={term} onChange={handleTermChange} />
+                                    <Input fluid size="mini" icon='calendar alternate outline' iconPosition="left" label={{ basic: true, content: 'Months' }} labelPosition="right" type="number" placeholder="Months" value={term} onChange={handleTermChange} />
                                     {termError && <Label basic color="red" pointing>
                                         {termError}
                                     </Label>}

@@ -17,6 +17,7 @@ class MortgageDetailPanel extends Component {
             <div>
                 {this.state.detail.length > 0 && (
                     <Segment color="grey" raised>
+                        {/* <div>{JSON.stringify(this.state.detail, null, 2)}</div> */}
                         <Header as="h1" color="grey" textAlign="center">Mortgage monthly breakdown</Header>
                         <Table striped unstackable>
                             <TableHeader>
@@ -31,7 +32,7 @@ class MortgageDetailPanel extends Component {
                             <TableBody>
                                 {this.state.detail.map((paymentLine: any) => (
                                     <TableRow key={paymentLine.month}>
-                                        <TableCell textAlign="center">{paymentLine.month}</TableCell>
+                                        <TableCell textAlign="center">{paymentLine.displayDate}</TableCell>
                                         <TableCell textAlign="center">{numberFormat(paymentLine.balance)}</TableCell>
                                         <TableCell textAlign="center">{numberFormat(paymentLine.payment)}</TableCell>
                                         <TableCell textAlign="center">{numberFormat(paymentLine.principal)}</TableCell>

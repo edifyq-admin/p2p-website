@@ -3,6 +3,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 type PaymnentDetail = {
     balance: number,
+    date: Date,
+    displayDate: string,
     interest: number,
     month: number,
     payment: number,
@@ -15,8 +17,14 @@ const calculateDetail = ({ mortgage, paymentMonths, rate }: { mortgage: number, 
         const payment = calculateMonthlyPayment({ mortgage, paymentMonths: i, rate});
         const interest = mortgage * (rate / 100 / 12);
         const principal = payment - interest;
+        const today = new Date();
+        const month = today.getMonth();
+        const year = today.getFullYear();
+        const date = new Date(year, month + (paymentMonths * 1) - i, 1);
         array.push({
             balance: mortgage,
+            date,
+            displayDate: `${new Intl.DateTimeFormat('en', { month: 'short' }).format(date)} ${new Intl.DateTimeFormat('en', { year: 'numeric'}).format(date)}`,
             interest,
             month: paymentMonths - i + 1,
             payment,
@@ -34,8 +42,8 @@ const calculateMonthlyPayment = ({ mortgage, paymentMonths, rate }: { mortgage: 
 }
 
 const calculateMortgage = ({ mortgage, period, rate}: {mortgage: number, period: number, rate: number}) => {
-    const payment = calculateMonthlyPayment({ mortgage, paymentMonths: period * 12, rate });
-    const detail = calculateDetail({ mortgage, paymentMonths: period * 12, rate });
+    const payment = calculateMonthlyPayment({ mortgage, paymentMonths: period, rate });
+    const detail = calculateDetail({ mortgage, paymentMonths: period, rate });
     const totalInterest = detail.reduce((sum, item) => sum += item.interest, 0);
     return { detail, mortgage: mortgage * 1, payment, period, rate, totalInterest, totalLoan: mortgage * 1 + totalInterest };
 }
