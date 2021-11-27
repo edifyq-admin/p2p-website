@@ -13,7 +13,6 @@ class MortgageSummaryPanel extends Component {
 
     componentDidMount() {
         dataService.mortgageSummary.subscribe((data: any) => {
-            console.log(data);
             const { payment, totalInterest, totalLoan } = data;
             this.setState({
                 payment: payment,

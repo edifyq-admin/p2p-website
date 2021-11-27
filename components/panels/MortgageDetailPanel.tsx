@@ -15,7 +15,7 @@ class MortgageDetailPanel extends Component {
     render() {
         return (
             <div>
-                {this.state.detail.length > 0 && (
+                {this.state.detail?.length > 0 && (
                     <Segment color="grey" raised>
                         {/* <div>{JSON.stringify(this.state.detail, null, 2)}</div> */}
                         <Header as="h1" color="grey" textAlign="center">Mortgage monthly breakdown</Header>
