@@ -1,11 +1,17 @@
 import { useState } from "react"
 import { Header, Radio, Segment } from "semantic-ui-react"
+import { clearData } from "../../services/DataService"
 import { MortgageInputForm } from "../forms/MortgageInputForm"
 import { MultiTermMortgageForm } from "../forms/MultiTermMortgageForm"
 
 export const MortgageFormPanel = () => {
 
     const [ multiTerm, setMultiTerm ] = useState(false)
+
+    const handleToggle = () => {
+        clearData();
+        setMultiTerm(!multiTerm);
+    }
 
     return (
         <Segment raised color="blue">
@@ -15,7 +21,7 @@ export const MortgageFormPanel = () => {
                     toggle
                     checked={multiTerm}
                     label="Enable multi-term mortgage"
-                    onClick={() => setMultiTerm(!multiTerm)}
+                    onClick={handleToggle}
                 />
             </div>
             <br />

@@ -13,8 +13,8 @@ export const clearData = () => {
 }
 
 export const updateMortgageDetails = (data: any) => {
-    const { detail, mortgage, payment, period, rate, totalInterest, totalLoan } = data;
-    mortgageSummarySubject.next({ mortgage, payment, period, rate, totalInterest, totalLoan });
+    const { detail, mortgage, payments, period, rate, totalInterest, totalLoan } = data;
+    mortgageSummarySubject.next({ mortgage, payments, period, rate, totalInterest, totalLoan });
     mortgageBreakdownSubject.next({ detail });
 }
 

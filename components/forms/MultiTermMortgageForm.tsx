@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { Button, Form, FormField, Grid, GridColumn, GridRow, Header, Input, Label, List, Radio, Segment, Select } from "semantic-ui-react"
-import { clearMortgage, getMortgage } from "../../services/MortgageService";
+import { Button, Form, FormField, Grid, GridColumn, GridRow, Input, Label, List, ListItem, Message, Select, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react"
+import { clearMortgage, getMultiMortgage } from "../../services/MortgageService";
 
 export const MultiTermMortgageForm = () => {
 
@@ -8,77 +8,95 @@ export const MultiTermMortgageForm = () => {
     const [loanAmount, setLoanAmount] = useState<number | string>('');
     const [term, setTerm] = useState<number | string>('');
 
-    const [interestError, setInterestError] = useState<string>();
+    const [interestError, setInterestError] = useState<boolean>(false);
     const [mortgageError, setMortgageError] = useState<string>();
     const [termError, setTermError] = useState<string>();
 
+    const [ displayOptions, setDisplayOptions ] = useState<any[]>([]);
     const [ enableMulti, setEnableMulti ] = useState<boolean>(false);
-    const [ multiInput, setMultiInput ] = useState<any[]>([{ month: '', value: ''}]);
+    const [ month, setMonth ] = useState<any>(0);
+    const [ multiInput, setMultiInput ] = useState<any[]>([]);
+    const [ options, setOptions ] = useState<any[]>([]);
 
-    const handleInterestChange = (event: any) => setInterest(event.target.value);
     const handleLoanAmountChange = (event: any) => setLoanAmount(event.target.value);
     const handleTermChange = (event: any) => setTerm(event.target.value);
 
-    const dateOptions = [
-        { key: '0', value: '0', text: 'zero' },
-        { key: '1', value: '1', text: 'one' },
-        { key: '2', value: '2', text: 'two' }
-    ];
-
-    const handleMultiInterestChange = (event: any, index: number) => {
-        const { name, value } = event.target;
-        const list = [ ...multiInput ];
-        list[index][name] = value;
-        setMultiInput(list);
-    }
-
-    const handeMultiMonthChange = (event: any, index: number) => {
-        console.log(index);
-        console.log(event);
-        console.log(event.target.textContent)
-        const { name, value } = event.target;
-        const list = [ ...multiInput ];
-        list[index].month = dateOptions.find(item => item.text === event.target.textContent)?.key;
-        setMultiInput(list);
+    const populateOptions = () => {
+        let options: any[] = [];
+        const date = new Date();
+        const month = date.getMonth();
+        const year = date.getFullYear();
+        for (let i=0; i<term; i++) {
+            const future = new Date(year, month + i, 1);
+            options.push({
+                key: i, value: i,
+                text: `${new Intl.DateTimeFormat('en', { month: 'short' }).format(future)} ${new Intl.DateTimeFormat('en', { year: 'numeric'}).format(future)}`
+            });
+        }
+        return options;
     }
 
     const addTerm = () => {
-        setMultiInput(array => ([ ...array, { month: '', value: ''}]));
+        if (!term) {
+            setTermError('Please enter a mortgage term');
+            return;
+        }
+        setTermError('');
+        if (!options.length) {
+            const array = createOptions(0);
+            setOptions(array);
+            setDisplayOptions(array);
+            setEnableMulti(true);
+            return;
+        }
+        if (interest === '') {
+            setInterestError(true);
+            return;
+        }
+        setInterestError(false);
+        setMultiInput(array => [...array, {interest, month}]);
+        setDisplayOptions(options.filter(item => item.key > month));
+        setMonth((value: any) => value += 1);
     }
 
     const clearData = () => {
+        setOptions([]);
+        setDisplayOptions([]);
         setLoanAmount('');
         setTerm('');
-        setMultiInput(() => [{ month: '', value: ''}]);
+        setMultiInput([]);
+        setEnableMulti(false);
+        setInterest('');
+        setMonth(0);
         clearMortgage();
     }
 
+    const createOptions = (start: number) => {
+        return populateOptions().filter(item => item.key >= start);
+    }
+
     const sendData = () => {
-        console.log(multiInput);
-        // if (!loanAmount) {
-        //     setMortgageError('Please enter a mortgage amount');
-        // } else if (loanAmount <= 0) {
-        //     setMortgageError('Please enter a valid mortgage value');
-        // } else {
-        //     setMortgageError('');
-        // }
-        // if (!interest) {
-        //     setInterestError('Please enter your interest rate');
-        // } else if (interest <= 0) {
-        //     setInterestError('Please enter a valid interest rate');
-        // } else {
-        //     setInterestError('');
-        // }
-        // if (!term) {
-        //     setTermError('Please enter a mortgage term');
-        // } else if (term <= 0) {
-        //     setTermError('Please enter a valid term');
-        // } else {
-        //     setTermError('');
-        // }
-        // if (!mortgageError && !interestError && !termError) {
-        //     getMortgage({ interest, loanAmount, term });
-        // }
+        if (!loanAmount) {
+            setMortgageError('Please enter a mortgage amount');
+        } else if (loanAmount <= 0) {
+            setMortgageError('Please enter a valid mortgage value');
+        } else {
+            setMortgageError('');
+        }
+        if (!term) {
+            setTermError('Please enter a mortgage term');
+        } else if (term <= 0) {
+            setTermError('Please enter a valid term');
+        } else {
+            setTermError('');
+        }
+        if (loanAmount && term) {
+            getMultiMortgage({
+                mortgage: Number(loanAmount) * 1,
+                rates: multiInput.map(item => ({ month: Number(item.month), rate: Number(item.interest)})),
+                term: Number(term) * 1
+            })
+        }
     }
 
     return (
@@ -104,19 +122,45 @@ export const MultiTermMortgageForm = () => {
                         </GridRow>
                     </Grid>
                 </List.Item>
-                {multiInput.map((input, index) => (
-                    <List.Item key={index}>
-                        <Grid stackable>
-                            <GridRow columns={1}>
-                                <GridColumn>
-                                    <Select name="month" placeholder="select an option" options={dateOptions} onChange={event => handeMultiMonthChange(event, index)} value={input.month} />
-                                    <Input fluid name="value" size="mini" icon='percent' type="number" placeholder="Interest rate" value={input.value} onChange={event => handleMultiInterestChange(event, index)} />
-                                </GridColumn>
-                            </GridRow>
-                        </Grid>
-                    </List.Item>
-                ))}
-                <Button onClick={addTerm} >Add</Button>
+                <List.Item>
+                    <Message info><p>Add the start of each term with the interest rate for that period here.</p></Message>
+                </List.Item>
+                {multiInput.length > 0 && (
+                    <ListItem>
+                        <Table size="small" striped color="teal" textAlign="center" unstackable>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHeaderCell textAlign="center">Start</TableHeaderCell>
+                                    <TableHeaderCell textAlign="center">Interest Rate</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {multiInput.map(item => (
+                                    <TableRow key={item.month}>
+                                        <TableCell>{options[item.month]?.text}</TableCell>
+                                        <TableCell>{item.interest}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </ListItem>
+                )}
+                {enableMulti && (<ListItem>
+                    <Grid>
+                        <GridRow columns={2}>
+                            <GridColumn>
+                                <Select style={{fontSize: '1.1rem', width: '100%'}} name="month" options={displayOptions} value={month} onChange={(e, option) => setMonth(option.value)} />
+                            </GridColumn>
+                            <GridColumn stretched>
+                                <Input fluid name="value" size="mini" icon="percent" type="number" placeholder="Interest rate" value={interest} onChange={e => setInterest(e.target.value)} />
+                                {interestError && <Label basic color="red" pointing>Please enter a valid interest rate</Label>}
+                            </GridColumn>
+                        </GridRow>
+                    </Grid>
+                </ListItem>)}
+                <List.Item>
+                    <Button fluid color="teal" onClick={addTerm} >Add Mortgage Term</Button>
+                </List.Item>
                 <List.Item>
                     <Grid columns={2} stackable>
                         <Grid.Row>

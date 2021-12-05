@@ -6,16 +6,16 @@ import { numberFormat } from "../../services/utilService";
 class MortgageSummaryPanel extends Component {
 
     state = {
-        payment: 0,
+        payments: [],
         totalInterest: 0,
         totalLoan: 0
     }
 
     componentDidMount() {
         dataService.mortgageSummary.subscribe((data: any) => {
-            const { payment, totalInterest, totalLoan } = data;
+            const { payments, totalInterest, totalLoan } = data;
             this.setState({
-                payment: payment,
+                payments: payments,
                 totalInterest: totalInterest,
                 totalLoan: totalLoan
             });
@@ -25,17 +25,19 @@ class MortgageSummaryPanel extends Component {
     render() {
         return (
             <div>
-                {this.state.payment > 0 && (
+                {this.state.payments?.length > 0 && (
                     <Segment raised color="teal">
                         <Header as="h1" color="teal" textAlign="center">Mortgage summary</Header>
                         <Table unstackable>
                             <TableBody>
                                 <TableRow>
-                                    <TableCell collapsing>
-                                        <Header as="h3">Monthly payment:</Header>
+                                    <TableCell collapsing verticalAlign="top">
+                                        <Header as="h3">{`Monthly payment${this.state.payments.length > 1 ? 's' : ''}:`}</Header>
                                     </TableCell>
                                     <TableCell>
-                                        <Header as="h3">{ numberFormat(this.state.payment)}</Header>
+                                        {this.state.payments.length > 1 ? this.state.payments.map((item: any) => (
+                                            <div>{item.from} - {item.to}: <b>{numberFormat(item.payment)}</b></div>
+                                        )) : <Header as="h3">{this.state.payments.map((item: any) => numberFormat(item.payment))}</Header>}
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>

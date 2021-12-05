@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { format } from "path/posix";
 
 type MortgageInput = {
     mortgage: number;
@@ -16,17 +15,17 @@ const calculateDetails = ({ mortgage, rates, term}: MortgageInput) => {
     let payments = [];
     const ratesArray = spreadRates({rates, term});
     const monthlyRatesArray = ratesArray.map(rate => rate / 100 / 12);
-    for (let i=0; i<term; i++) {
+    for (let i=0; i<term && mortgage > 0; i++) {
         const month = i + 1;
         const factor = Math.pow(1 + monthlyRatesArray[i], term - month);
         const payment = (mortgage * factor * monthlyRatesArray[i]) / (factor - 1);
         const interest = mortgage * monthlyRatesArray[i];
         const principal = payment - interest;
         payments.push({
+            balance: mortgage,
             displayDate: formatDate(i),
             interest,
             month: i,
-            mortgage,
             payment,
             principal,
             rate: ratesArray[i]
