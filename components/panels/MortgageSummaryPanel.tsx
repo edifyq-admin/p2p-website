@@ -35,8 +35,8 @@ class MortgageSummaryPanel extends Component {
                                         <Header as="h3">{`Monthly payment${this.state.payments.length > 1 ? 's' : ''}:`}</Header>
                                     </TableCell>
                                     <TableCell>
-                                        {this.state.payments.length > 1 ? this.state.payments.map((item: any) => (
-                                            <div>{item.from} - {item.to}: <b>{numberFormat(item.payment)}</b></div>
+                                        {this.state.payments.length > 1 ? this.state.payments.map((item: any, index: number) => (
+                                            <div key={index}>{item.from} - {item.to}: <b>{numberFormat(item.payment)}</b></div>
                                         )) : <Header as="h3">{this.state.payments.map((item: any) => numberFormat(item.payment))}</Header>}
                                     </TableCell>
                                 </TableRow>
