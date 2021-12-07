@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { calculateRequiredPayments } from "./custom-payment";
 
 type MortgageInput = {
     mortgage: number;
@@ -17,8 +18,7 @@ const calculateDetails = ({ mortgage, rates, term}: MortgageInput) => {
     const monthlyRatesArray = ratesArray.map(rate => rate / 100 / 12);
     for (let i=0; i<term && mortgage > 0; i++) {
         const month = i + 1;
-        const factor = Math.pow(1 + monthlyRatesArray[i], term - month);
-        const payment = (mortgage * factor * monthlyRatesArray[i]) / (factor - 1);
+        const payment = calculateRequiredPayments({ mortgage, monthlyRate: monthlyRatesArray[i], term: term - month})
         const interest = mortgage * monthlyRatesArray[i];
         const principal = payment - interest;
         payments.push({
@@ -35,14 +35,14 @@ const calculateDetails = ({ mortgage, rates, term}: MortgageInput) => {
     return payments;
 }
 
-const calculateMortgage = ({ mortgage, rates, term }: MortgageInput) => {
+export const calculateMultiMortgage = ({ mortgage, rates, term }: MortgageInput) => {
     const detail = calculateDetails({ mortgage, rates, term });
     const payments = reducePayments({ detail });
     const totalInterest = detail.reduce((sum, item) => sum += item.interest, 0);
     return { detail, mortgage, payments, term, totalInterest, totalLoan: mortgage * 1 + totalInterest }
 };
 
-const formatDate = (extraMonths: number) => {
+export const formatDate = (extraMonths: number) => {
     const today = new Date();
     const month = today.getMonth();
     const year = today.getFullYear();
@@ -68,7 +68,7 @@ const reducePayments = ({ detail }: {detail: any[]}) => {
     return payments;
 }
 
-const spreadRates = ({ rates, term }: { rates: MortgageInputRates[], term: number}) => {
+export const spreadRates = ({ rates, term }: { rates: MortgageInputRates[], term: number}) => {
     let array: number[] = new Array(term);
     rates.forEach(item => array.fill(item.rate, item.month, term));
     return array;
@@ -77,7 +77,7 @@ const spreadRates = ({ rates, term }: { rates: MortgageInputRates[], term: numbe
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         const { mortgage, rates, term } = req.body;
-        return res.status(200).json(calculateMortgage({ mortgage, rates, term }));
+        return res.status(200).json(calculateMultiMortgage({ mortgage, rates, term }));
     }
     return res.status(200).json({ name: 'Multiple term calculator' })
 }

@@ -1,5 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { calculateRequiredPayments } from './custom-payment';
 
 type PaymnentDetail = {
     balance: number,
@@ -14,7 +15,7 @@ type PaymnentDetail = {
 const calculateDetail = ({ mortgage, paymentMonths, rate }: { mortgage: number, paymentMonths: number, rate: number }) => {
     const array: PaymnentDetail[] = [];
     for (let i = paymentMonths; i > 0; i--) {
-        const payment = calculateMonthlyPayment({ mortgage, paymentMonths: i, rate});
+        const payment = calculateRequiredPayments({ mortgage, monthlyRate: rate / 100 / 12, term: i});
         const interest = mortgage * (rate / 100 / 12);
         const principal = payment - interest;
         const today = new Date();
@@ -41,8 +42,8 @@ const calculateMonthlyPayment = ({ mortgage, paymentMonths, rate }: { mortgage: 
     return (mortgage * factor * monthlyInterest) / (factor - 1);
 }
 
-const calculateMortgage = ({ mortgage, period, rate}: {mortgage: number, period: number, rate: number}) => {
-    const payment = calculateMonthlyPayment({ mortgage, paymentMonths: period, rate });
+export const calculateMortgage = ({ mortgage, period, rate}: {mortgage: number, period: number, rate: number}) => {
+    const payment = calculateRequiredPayments({ mortgage, monthlyRate: rate / 100 / 12, term: period})
     const detail = calculateDetail({ mortgage, paymentMonths: period, rate });
     const totalInterest = detail.reduce((sum, item) => sum += item.interest, 0);
     return { detail, mortgage: mortgage * 1, payment, period, rate, totalInterest, totalLoan: mortgage * 1 + totalInterest };
