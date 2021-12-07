@@ -12,20 +12,28 @@ type PaymnentDetail = {
     principal: number
 }
 
+export const calculateDate = (months: number) => {
+    const today = new Date();
+    const month = today.getMonth();
+    const year = today.getFullYear();
+    return new Date(year, month + months, 1);
+}
+
+export const formatDate = (date: Date) => {
+    return `${new Intl.DateTimeFormat('en', { month: 'short' }).format(date)} ${new Intl.DateTimeFormat('en', { year: 'numeric'}).format(date)}`;
+}
+
 const calculateDetail = ({ mortgage, paymentMonths, rate }: { mortgage: number, paymentMonths: number, rate: number }) => {
     const array: PaymnentDetail[] = [];
     for (let i = paymentMonths; i > 0; i--) {
         const payment = calculateRequiredPayments({ mortgage, monthlyRate: rate / 100 / 12, term: i});
         const interest = mortgage * (rate / 100 / 12);
         const principal = payment - interest;
-        const today = new Date();
-        const month = today.getMonth();
-        const year = today.getFullYear();
-        const date = new Date(year, month + (paymentMonths * 1) - i, 1);
+        const date = calculateDate((paymentMonths * 1) - i);
         array.push({
             balance: mortgage,
             date,
-            displayDate: `${new Intl.DateTimeFormat('en', { month: 'short' }).format(date)} ${new Intl.DateTimeFormat('en', { year: 'numeric'}).format(date)}`,
+            displayDate: formatDate(date),
             interest,
             month: paymentMonths - i + 1,
             payment,
@@ -34,12 +42,6 @@ const calculateDetail = ({ mortgage, paymentMonths, rate }: { mortgage: number, 
         mortgage -= principal;
     }
     return array;
-}
-
-const calculateMonthlyPayment = ({ mortgage, paymentMonths, rate }: { mortgage: number, paymentMonths: number, rate: number }) => {
-    const monthlyInterest = rate / 100 / 12;
-    const factor = Math.pow(1 + monthlyInterest, paymentMonths);
-    return (mortgage * factor * monthlyInterest) / (factor - 1);
 }
 
 export const calculateMortgage = ({ mortgage, period, rate}: {mortgage: number, period: number, rate: number}) => {

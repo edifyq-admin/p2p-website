@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { calculateMortgage } from "./calculate-mortgage";
-import { formatDate, spreadRates } from "./multiple-term-mortgage";
+import { calculateDate, calculateMortgage, formatDate } from "./calculate-mortgage";
+import { spreadRates } from "./multiple-term-mortgage";
 
 type MortgageInput = {
     custom: MortgageCustomInputs[];
@@ -36,9 +36,10 @@ const calculateDetails = ({ custom, mortgage, rates, term}: MortgageInput) => {
         const interest = mortgage * monthlyRatesArray[i];
         const principal = customPayment ? customPayment.payment : payment - interest;
         const notComplete = mortgage > requiredPayment;
+        const date = calculateDate(i);
         payments.push({
             balance: mortgage,
-            displayDate: formatDate(i),
+            displayDate: formatDate(date),
             interest,
             month: i,
             payment: notComplete ? payment : principal,

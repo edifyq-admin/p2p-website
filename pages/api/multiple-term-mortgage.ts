@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { calculateDate, formatDate } from "./calculate-mortgage";
 import { calculateRequiredPayments } from "./custom-payment";
 
 type MortgageInput = {
@@ -21,9 +22,11 @@ const calculateDetails = ({ mortgage, rates, term}: MortgageInput) => {
         const payment = calculateRequiredPayments({ mortgage, monthlyRate: monthlyRatesArray[i], term: term - month})
         const interest = mortgage * monthlyRatesArray[i];
         const principal = payment - interest;
+        const date = calculateDate(i);
         payments.push({
             balance: mortgage,
-            displayDate: formatDate(i),
+            date,
+            displayDate: formatDate(date),
             interest,
             month: i,
             payment,
@@ -42,13 +45,13 @@ export const calculateMultiMortgage = ({ mortgage, rates, term }: MortgageInput)
     return { detail, mortgage, payments, term, totalInterest, totalLoan: mortgage * 1 + totalInterest }
 };
 
-export const formatDate = (extraMonths: number) => {
-    const today = new Date();
-    const month = today.getMonth();
-    const year = today.getFullYear();
-    const date = new Date(year, month + extraMonths, 1);
-    return `${new Intl.DateTimeFormat('en', { month: 'short' }).format(date)} ${new Intl.DateTimeFormat('en', { year: 'numeric'}).format(date)}`;
-}
+// export const formatDate = (extraMonths: number) => {
+//     const today = new Date();
+//     const month = today.getMonth();
+//     const year = today.getFullYear();
+//     const date = new Date(year, month + extraMonths, 1);
+//     return `${new Intl.DateTimeFormat('en', { month: 'short' }).format(date)} ${new Intl.DateTimeFormat('en', { year: 'numeric'}).format(date)}`;
+// }
 
 const reducePayments = ({ detail }: {detail: any[]}) => {
     let payments = detail.reduce((array, item) => {
@@ -59,12 +62,12 @@ const reducePayments = ({ detail }: {detail: any[]}) => {
         return array;
     }, []).map((item: any) => {
         const { month, payment, rate } = item;
-        return { from: formatDate(month), month, payment, rate };
+        return { from: formatDate(calculateDate(month)), month, payment, rate };
     });
     for (let i=1; i<payments.length; i++) {
-        payments[i - 1].to = formatDate(payments[i].month - 1);
+        payments[i - 1].to = formatDate(calculateDate(payments[i].month - 1));
     }
-    payments[payments.length - 1].to = formatDate(detail[detail.length - 1].month);
+    payments[payments.length - 1].to = formatDate(calculateDate(detail[detail.length - 1].month));
     return payments;
 }
 
